@@ -2,34 +2,31 @@
 
 const serverlessHttp = require('serverless-http');
 const Koa = require('koa');
-const Router = require('koa-router');
+// const Router = require('koa-router');
 const mongoose = require('mongoose');
+const router = require('./app/routes/user-route');
 
 const app = new Koa();
-const router = new Router();
+// const router = new Router();
 const { Schema, model } = mongoose;
 
 
-mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/zhihu?retryWrites=true&w=majority');
-
-const userSchema = new Schema({
-  username: { type: String} ,
-  pwd: { type: String}
-})
-const userModel = model('users', userSchema);
+// mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/zhihu?retryWrites=true&w=majority');
 
 
 
-router.get('/get', async (ctx) => {
-  // const user = new userModel({username:'fajing',password:'66666666'}).save();
-  ctx.body = (await userModel.find()).toString();
-  // ctx.body = ctx.header;
-})
 
-router.get('/insert', (ctx) => {
-  const user = new userModel({username:'fajing',pwd:'66666666'}).save();
-  ctx.body = ctx.header;
-})
+
+// router.get('/get', async (ctx) => {
+//   // const user = new userModel({username:'fajing',password:'66666666'}).save();
+//   ctx.body = (await userModel.find()).toString();
+//   // ctx.body = ctx.header;
+// })
+
+// router.get('/insert', (ctx) => {
+//   const user = new userModel({username:'fajing',pwd:'66666666'}).save();
+//   ctx.body = ctx.header;
+// })
 
 router.get('/test',(ctx) => {
   ctx.body = 'body';
@@ -64,7 +61,7 @@ const test = async (event) => {
 };
 
 module.exports= {
-  // app,
+  app,
   test: test,
   api : api
 };
