@@ -5,13 +5,14 @@ const Koa = require('koa');
 // const Router = require('koa-router');
 const mongoose = require('mongoose');
 const router = require('./app/routes/user-route');
+const bodyparser = require('koa-bodyparser');
 
 const app = new Koa();
 // const router = new Router();
 const { Schema, model } = mongoose;
 
 
-// mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/zhihu?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/zhihu?retryWrites=true&w=majority');
 
 
 
@@ -27,11 +28,12 @@ const { Schema, model } = mongoose;
 //   const user = new userModel({username:'fajing',pwd:'66666666'}).save();
 //   ctx.body = ctx.header;
 // })
+app.use(bodyparser());
 
-router.get('/test',(ctx) => {
-  ctx.body = 'body';
-})
 
+// router.get('/test',(ctx) => {
+//   ctx.body = 'body';
+// })
 app.use(router.routes());
 
 // or as a promise
