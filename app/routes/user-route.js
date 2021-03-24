@@ -7,11 +7,19 @@ const router = new Router();
 router.post('/user', userCls.createUser);
 
 // Update info
+router.patch('/user', userCls.updateUser);
+
 // Validate User
+router.post('/validateUser', userCls.valdiate);
+
 // Delete User
+router.delete('/:id', userCls.delete);
 // Login use mobile number
 // Reset PWD
 // Login SSO
 
+router.get('/test',(ctx) => {
+  ctx.body = 'body';
+})
 
 module.exports = router;
