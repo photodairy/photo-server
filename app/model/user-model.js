@@ -17,36 +17,36 @@ const userSchema = new mongoose.Schema({
     type: {type: String, enum: ['admin','tester','user']},
     role: {type: String, enum: ['normal','profession']},
     following: {
-          type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+          type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
           select: false,
         },
 })
 
-const photsSchema = new mongoose.Schema({
-  id,
-photo_url,
-category,
-create_time,
-update_time,
-title,
-description,
-country,
-province,
-city,
-loc_longitude,
-loc_latitude,
-camera_model,
-lens_model,
-aperture,
-focal_distance,
-iso,
-user_id,
-liking_user,
-collecting_user,
+// const photsSchema = new mongoose.Schema({
+//   id,
+// photo_url,
+// category,
+// create_time,
+// update_time,
+// title,
+// description,
+// country,
+// province,
+// city,
+// loc_longitude,
+// loc_latitude,
+// camera_model,
+// lens_model,
+// aperture,
+// focal_distance,
+// iso,
+// user_id,
+// liking_user,
+// collecting_user,
 
 
 
-})
+// })
   // {
   //   locations: { type: [{ type: Schema.Types.ObjectId, ref: 'Topic' }], select: false },
   //   business: { type: Schema.Types.ObjectId, ref: 'Topic', select: false },

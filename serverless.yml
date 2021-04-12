@@ -58,30 +58,31 @@ provider:
 #    - exclude-me.js
 #    - exclude-me-dir/**
 functions:
-  api:
-      handler: handler.api
-      events:
-        - http:
-            path: / # this matches the base path
-            method: ANY
-        - http:
-            path: /{any+} # this matches any path, the token 'any' doesn't mean anything special
-            method: ANY
-# functions:
-#   api:
-#     handler: handler.api
-#     events:
-#       - http:
-#           path: api
-#           method: get
-#           cors: true
-#   test:
-#     handler: handler.test
-#     events:
-#       - http:
-#           path: test
-#           method: get
-#           cors: true
+  # api:
+  #     handler: handler.api
+  #     events:
+  #       - http:
+  #           path: / # this matches the base path
+  #           method: ANY
+  #       - http:
+  #           path: /{any+} # this matches any path, the token 'any' doesn't mean anything special
+  #           method: ANY
+  
+  test:
+    handler: handler.test
+    events:
+      - http:
+          path: test
+          method: get
+          cors: true
+
+  uploadFile:
+    handler: handler.uploadFile
+    events:
+      - http:
+          path: uploadFile
+          method: post
+          cors: true
 plugins:
   - serverless-offline
       # - http:
