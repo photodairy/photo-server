@@ -5,11 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-chrome",
+            "name": "Launch Program - photoServer",
+            "program": "${workspaceFolder}/index.js",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}"
-        }
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        },
+        // {
+        //     "type": "pwa-chrome",
+        //     "request": "launch",
+        //     "name": "Launch Chrome against localhost",
+        //     "url": "http://localhost:8080",
+        //     "webRoot": "${workspaceFolder}"
+        // }
     ]
 }

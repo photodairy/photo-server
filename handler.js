@@ -11,8 +11,8 @@ const app = new Koa();
 
 // mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/zhihu?retryWrites=true&w=majority');
 
-// app.use(bodyparser());
-// app.use(router.routes());
+app.use(bodyparser());
+app.use(router.routes());
 // const apphandler = serverlessHttp(app);
 // const api = async (event, context) => {
 //   // you can do other things here
@@ -120,7 +120,7 @@ const test = async (event) => {
 };
 
 module.exports= {
-  // app,
+  app,
   test: test,
   // api : api,
   uploadFile : uploadFile
