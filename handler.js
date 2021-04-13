@@ -152,6 +152,6 @@ const test = async (event) => {
 module.exports = {
   app,
   test: test,
-  // api : api,
+  api : api,
   uploadFile: uploadFile
 };
