@@ -3,23 +3,26 @@
 const serverlessHttp = require('serverless-http');
 const Koa = require('koa');
 const mongoose = require('mongoose');
-const router = require('./app/routes/user-route');
+const router_user = require('./app/routes/user-route');
+const router_photo = require('./app/routes/photo-route');
 const bodyparser = require('koa-bodyparser');
 
 const app = new Koa();
 
 
-// mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/zhihu?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/zhihu?retryWrites=true&w=majority');
 
 app.use(bodyparser());
-app.use(router.routes());
-// const apphandler = serverlessHttp(app);
-// const api = async (event, context) => {
-//   // you can do other things here
-//   const result = await apphandler(event, context);
-//   // and here
-//   return result;
-// };
+app.use(router_user.routes());
+app.use(router_photo.routes());
+
+const apphandler = serverlessHttp(app);
+const api = async (event, context) => {
+  // you can do other things here
+  const result = await apphandler(event, context);
+  // and here
+  return result;
+};
 
 // dependencies
 const AWS = require('aws-sdk');

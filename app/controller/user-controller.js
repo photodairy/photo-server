@@ -18,6 +18,19 @@ class UserCls {
     const user = await new userModel(ctx.request.body).save();
     ctx.body = user;
   }
+
+  // Create User
+  async createUserByPhoneNumber(ctx) {
+    // ctx.verifyParams({
+    //   name: { type: 'string', required: true },
+    //   password: { type: 'string', required: true },
+    // });
+    // const { name } = ctx.request.body;
+    // const repeatedUser = await User.findOne({ name });
+    // if (repeatedUser) { ctx.throw(409, '用户已经占用'); }
+    const user = await new userModel(ctx.request.body).save();
+    ctx.body = user;
+  }
   
   // Update user
   async updateUser(ctx) {
@@ -55,6 +68,20 @@ class UserCls {
     // // const { _id, name } = user;
     // // const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' });
     ctx.body = user.username ;
+  }
+
+  // Valdiate phone number
+  async valdiatePhoneNumber(ctx) {
+    ctx.verifyParams({
+      phoneNumber: { type: Number, required: true },
+      verificationCode: { type: Number, required: true },
+    });
+    // TODO: Add verificationCode in memory, verify it.
+    if (ctx.body.verificationCode === 000000) {
+      ctx.body = uctx.body.phoneNumber;
+    } else {
+      ctx.throw(401, '验证码错误！')
+    }
   }
 }
 

@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
     __v: { type: Number, select: false },
-    userid: { type: mongoose.Schema.Types.ObjectId},
     username: { type: String, required: true, select: false  } ,
     pwd: { type: String, required: true, select: false },
     name: { type: String, required: true,},
@@ -22,27 +21,6 @@ const userSchema = new mongoose.Schema({
         },
 })
 
-// const photsSchema = new mongoose.Schema({
-//   id,
-// photo_url,
-// category,
-// create_time,
-// update_time,
-// title,
-// description,
-// country,
-// province,
-// city,
-// loc_longitude,
-// loc_latitude,
-// camera_model,
-// lens_model,
-// aperture,
-// focal_distance,
-// iso,
-// user_id,
-// liking_user,
-// collecting_user,
 
 
 

@@ -58,15 +58,15 @@ provider:
 #    - exclude-me.js
 #    - exclude-me-dir/**
 functions:
-  # api:
-  #     handler: handler.api
-  #     events:
-  #       - http:
-  #           path: / # this matches the base path
-  #           method: ANY
-  #       - http:
-  #           path: /{any+} # this matches any path, the token 'any' doesn't mean anything special
-  #           method: ANY
+  api:
+      handler: handler.api
+      events:
+        - http:
+            path: / # this matches the base path
+            method: ANY
+        - http:
+            path: /{any+} # this matches any path, the token 'any' doesn't mean anything special
+            method: ANY
   
   test:
     handler: handler.test
