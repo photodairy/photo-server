@@ -1,10 +1,29 @@
 const userModel = require('../model/user-model');
+// const verNumberCls = require('./verNumber-controller');
+
+// const verNumCls = new verNumberCls();
 
 class UserCls {
   // Get all users
-  // async findUsers(ctx) {
-  //   ctx.body = await User.find();
-  // }
+  async findUsers(ctx) {
+    ctx.body = await User.find();
+  }
+
+  // Registered or Login by phone number
+  async registeredOrLogin(ctx) {
+    ctx.verifyParams({
+      phoneNumber: { type: 'number', required: true },
+      verCode: { type: 'number', required: true },
+    });
+
+    const { phoneNumber } = ctx.request.body;
+    const haveUser = await User.findOne({ phoneNumber });
+    if (haveUser) { 
+      ctx.body = haveUser
+    } else {
+      this.createUser(ctx);
+    }
+  }
 
   // Create User
   async createUser(ctx) {
@@ -25,9 +44,9 @@ class UserCls {
     //   name: { type: 'string', required: true },
     //   password: { type: 'string', required: true },
     // });
-    // const { name } = ctx.request.body;
-    // const repeatedUser = await User.findOne({ name });
-    // if (repeatedUser) { ctx.throw(409, '用户已经占用'); }
+    const { phoneNumber } = ctx.request.body;
+    const repeatedUser = await User.findOne({ phoneNumber });
+    if (repeatedUser) { ctx.throw(409, '该手机号以注册'); }
     const user = await new userModel(ctx.request.body).save();
     ctx.body = user;
   }
@@ -72,16 +91,16 @@ class UserCls {
 
   // Valdiate phone number
   async valdiatePhoneNumber(ctx) {
-    ctx.verifyParams({
-      phoneNumber: { type: Number, required: true },
-      verificationCode: { type: Number, required: true },
-    });
-    // TODO: Add verificationCode in memory, verify it.
-    if (ctx.body.verificationCode === 000000) {
-      ctx.body = uctx.body.phoneNumber;
-    } else {
-      ctx.throw(401, '验证码错误！')
-    }
+    // ctx.verifyParams({
+    //   phoneNumber: { type: Number, required: true },
+    //   verificationCode: { type: Number, required: true },
+    // });
+    // // TODO: Add verificationCode in memory, verify it.
+    // if (ctx.body.verificationCode === 000000) {
+    //   ctx.body = uctx.body.phoneNumber;
+    // } else {
+    //   ctx.throw(401, '验证码错误！')
+    // }
   }
 }
 

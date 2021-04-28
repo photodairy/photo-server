@@ -5,6 +5,7 @@ const Koa = require('koa');
 const mongoose = require('mongoose');
 const router_user = require('./app/routes/user-route');
 const router_photo = require('./app/routes/photo-route');
+const router_verNum = require('./app/routes/ver-number-route');
 const bodyparser = require('koa-bodyparser');
 
 const app = new Koa();
@@ -15,6 +16,7 @@ mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/
 app.use(bodyparser());
 app.use(router_user.routes());
 app.use(router_photo.routes());
+app.use(router_verNum.routes());
 
 const apphandler = serverlessHttp(app);
 const api = async (event, context) => {
@@ -25,14 +27,14 @@ const api = async (event, context) => {
 };
 
 // dependencies
-const AWS = require('aws-sdk');
-const util = require('util');
+// const AWS = require('aws-sdk');
+// const util = require('util');
 // const sharp = require('sharp');
 
 // get reference to S3 client
-const s3 = new AWS.S3();
+// const s3 = new AWS.S3();
 
-const uploadFile = async (event, context, callback) => {
+// const uploadFile = async (event, context, callback) => {
 
   // Read options from the event parameter.
   // console.log("Reading options from event:\n", util.inspect(event, { depth: 5 }));
@@ -82,9 +84,9 @@ const uploadFile = async (event, context, callback) => {
   // } 
 
   // Upload the thumbnail image to the destination bucket
-  const srcBucket = 'normal-photo';
-  const srcKey = 'Screenshot 2021-03-01 134825.png';
-  const buffer = event.body;
+  // const srcBucket = 'normal-photo';
+  // const srcKey = 'Screenshot 2021-03-01 134825.png';
+  // const buffer = event.body;
 
   // try {
   //   const destparams = {
@@ -108,33 +110,33 @@ const uploadFile = async (event, context, callback) => {
   // console.log('Successfully upload file to ' + srcBucket + '/' + srcKey);
 
   // Download the image from the S3 source bucket. 
-  try {
-    const params = {
-      Bucket: srcBucket,
-      Key: srcKey
-    };
-    var origimage = await s3.getObject(params).promise();
+  // try {
+  //   const params = {
+  //     Bucket: srcBucket,
+  //     Key: srcKey
+  //   };
+  //   var origimage = await s3.getObject(params).promise();
 
-    return {
-      statusCode: 200,
-      ContentType : 'image/png',
-      body: JSON.stringify(
-        {
-          file: origimage.Body,
-        },
-        null,
-        2
-      )
-    }
+  //   return {
+  //     statusCode: 200,
+  //     ContentType : 'image/png',
+  //     body: JSON.stringify(
+  //       {
+  //         file: origimage.Body,
+  //       },
+  //       null,
+  //       2
+  //     )
+  //   }
     // console.log(context );
     // console.log('Successfully download ' + srcBucket + '/' + srcKey );
 
-  } catch (error) {
-    console.log(error);
-    return;
-  }
+//   } catch (error) {
+//     console.log(error);
+//     return;
+//   }
 
-};
+// };
 
 const test = async (event) => {
   return {
@@ -156,5 +158,4 @@ module.exports = {
   app,
   test: test,
   api : api,
-  uploadFile: uploadFile
 };
