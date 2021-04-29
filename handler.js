@@ -6,14 +6,16 @@ const mongoose = require('mongoose');
 const router_user = require('./app/routes/user-route');
 const router_photo = require('./app/routes/photo-route');
 const router_verNum = require('./app/routes/ver-number-route');
-const bodyparser = require('koa-bodyparser');
+const koaBody = require('koa-body');
 
 const app = new Koa();
 
 
-mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/zhihu?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/zhihu?retryWrites=true&w=majority', { useNewUrlParser: true , useUnifiedTopology: true}, () => console.log('MongoDB connented!'));
+mongoose.connection.on('error', console.error);
 
-app.use(bodyparser());
+app.use(koaBody());
+
 app.use(router_user.routes());
 app.use(router_photo.routes());
 app.use(router_verNum.routes());

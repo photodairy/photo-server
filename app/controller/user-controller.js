@@ -1,25 +1,27 @@
-const userModel = require('../model/user-model');
-// const verNumberCls = require('./verNumber-controller');
-
-// const verNumCls = new verNumberCls();
+const UserModel = require('../model/user-model');
 
 class UserCls {
   // Get all users
   async findUsers(ctx) {
-    ctx.body = await User.find();
+    ctx.body = await UserModel.find();
   }
 
   // Registered or Login by phone number
   async registeredOrLogin(ctx) {
-    ctx.verifyParams({
-      phoneNumber: { type: 'number', required: true },
-      verCode: { type: 'number', required: true },
-    });
+    console.log('registeredOrLogin start');
+    console.log(UserModel);
+    // ctx.verifyParams({
+    //   phoneNumber: { type: 'number', required: true },
+    //   verCode: { type: 'number', required: true },
+    // });
 
     const { phoneNumber } = ctx.request.body;
-    const haveUser = await User.findOne({ phoneNumber });
+    console.log(phoneNumber);
+    const haveUser = await UserModel.findOne({ phoneNumber });
     if (haveUser) { 
-      ctx.body = haveUser
+      console.log(haveUser);
+      ctx.body = "Exist User";
+      console.log("Exist User");
     } else {
       this.createUser(ctx);
     }
@@ -27,6 +29,7 @@ class UserCls {
 
   // Create User
   async createUser(ctx) {
+    console.log('createUser');
     // ctx.verifyParams({
     //   name: { type: 'string', required: true },
     //   password: { type: 'string', required: true },
@@ -34,8 +37,10 @@ class UserCls {
     // const { name } = ctx.request.body;
     // const repeatedUser = await User.findOne({ name });
     // if (repeatedUser) { ctx.throw(409, '用户已经占用'); }
-    const user = await new userModel(ctx.request.body).save();
-    ctx.body = user;
+    const { phoneNumber } = ctx.request.body;
+    console.log(phoneNumber);
+    const user = await UserModel.create({ phoneNumber });
+    ctx.body = "Creat User";
   }
 
   // Create User
@@ -45,9 +50,9 @@ class UserCls {
     //   password: { type: 'string', required: true },
     // });
     const { phoneNumber } = ctx.request.body;
-    const repeatedUser = await User.findOne({ phoneNumber });
+    const repeatedUser = await UserModel.findOne({ phoneNumber });
     if (repeatedUser) { ctx.throw(409, '该手机号以注册'); }
-    const user = await new userModel(ctx.request.body).save();
+    const user = await new UserModel(ctx.request.body).save();
     ctx.body = user;
   }
   
@@ -64,14 +69,14 @@ class UserCls {
     //   employments: { type: 'array', itemType: 'object', required: false },
     //   educations: { type: 'array', itemType: 'object', required: false },
     // });
-    const user = await userModel.findByIdAndUpdate(ctx.params.id, ctx.request.body);
+    const user = await UserModel.findByIdAndUpdate(ctx.params.id, ctx.request.body);
     if (!user) { ctx.throw(404, '用户不存在'); }
     ctx.body = user;
   }
 
   // Delete user
   async delete(ctx) {
-    const user = await userModel.findByIdAndRemove(ctx.params.id);
+    const user = await UserModel.findByIdAndRemove(ctx.params.id);
     if (!user) { ctx.throw(404, '用户不存在'); }
     ctx.status = 204;
   }
@@ -82,7 +87,7 @@ class UserCls {
     // //   name: { type: 'string', required: true },
     // //   password: { type: 'string', required: true },
     // // });
-    const user = await userModel.findOne(ctx.request.body);
+    const user = await UserModel.findOne(ctx.request.body);
     if (!user) { ctx.throw(401, '用户名或密码不正确'); }
     // // const { _id, name } = user;
     // // const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' });

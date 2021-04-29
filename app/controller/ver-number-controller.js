@@ -1,22 +1,31 @@
 const userCls = require('./user-controller');
+const VerNumModel = require('../model/ver-number-model');
+const UserModel = require('../model/user-model');
 
-const verNumberList = [];
 
 class VerNumberCls {
-
     // Send verfication number
-    sendVerNumber(ctx) {
+    async sendVerNumber(ctx) {
         const verNum = Math.round(Math.random() * 100000);
-        verNumberList.push({phoneNumber: ctx.body.phoneNumber, verNumber: 888});
+        const verNumber = 888888;
+        const { phoneNumber } = ctx.request.body;
+        let item = await VerNumModel.findOne({ phoneNumber });
+        if (item) {
+            await VerNumModel.updateOne({ phoneNumber }, { verNumber })
+            ctx.body = "Send Success! Update" + phoneNumber;
+        } else {
+            await VerNumModel.create({ phoneNumber, verNumber })
+            ctx.body = "Send Success! Create" + phoneNumber;
+        }
     }
 
     // Check verfication number
-    checkVerNumber(ctx) {
-        const result = verNumberList.some(item => item.phoneNumber === ctx.body.phoneNum && item.verNumber === ctx.body.verNum);
+    async checkVerNumber(ctx) {
+        const result = await VerNumModel.findOne(ctx.request.body);
         if (result) {
-            new userCls().registeredOrLogin(ctx);
+            userCls.registeredOrLogin(ctx);
         } else {
-            ctx.throw('401', 'Error verfication number');
+            ctx.body = 'Error verfication number';
         }
     }
 }

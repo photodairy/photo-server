@@ -12,7 +12,7 @@
   "dependencies": {
     "aws-sdk": "^2.884.0",
     "koa": "^2.13.1",
-    "koa-bodyparser": "^3.2.0",
+    "koa-body": "^4.2.0",
     "koa-router": "^10.0.0",
     "mongoose": "^5.12.2",
     "serverless-http": "^2.7.0",

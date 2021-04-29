@@ -1,7 +1,7 @@
 const Router = require('koa-router');
 const verNumberCls = require('../controller/ver-number-controller');
 
-const router = new Router({prefix: '/photo'});
+const router = new Router({prefix: '/verNum'});
 
 // Send verfication number
 router.post('/sendVerNum', verNumberCls.sendVerNumber);

@@ -76,13 +76,13 @@ functions:
           method: get
           cors: true
 
-  uploadFile:
-    handler: handler.uploadFile
-    events:
-      - http:
-          path: uploadFile
-          method: post
-          cors: true
+  # uploadFile:
+  #   handler: handler.uploadFile
+  #   events:
+  #     - http:
+  #         path: uploadFile
+  #         method: post
+  #         cors: true
 plugins:
   - serverless-offline
       # - http:
