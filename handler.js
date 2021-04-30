@@ -1,24 +1,8 @@
 'use strict';
 
 const serverlessHttp = require('serverless-http');
-const Koa = require('koa');
-const mongoose = require('mongoose');
-const router_user = require('./app/routes/user-route');
-const router_photo = require('./app/routes/photo-route');
-const router_verNum = require('./app/routes/ver-number-route');
-const koaBody = require('koa-body');
+const app = require('./index.js');
 
-const app = new Koa();
-
-
-mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/zhihu?retryWrites=true&w=majority', { useNewUrlParser: true , useUnifiedTopology: true}, () => console.log('MongoDB connented!'));
-mongoose.connection.on('error', console.error);
-
-app.use(koaBody());
-
-app.use(router_user.routes());
-app.use(router_photo.routes());
-app.use(router_verNum.routes());
 
 const apphandler = serverlessHttp(app);
 const api = async (event, context) => {
@@ -27,7 +11,6 @@ const api = async (event, context) => {
   // and here
   return result;
 };
-
 // dependencies
 // const AWS = require('aws-sdk');
 // const util = require('util');
@@ -157,7 +140,6 @@ const test = async (event) => {
 };
 
 module.exports = {
-  app,
   test: test,
   api : api,
 };

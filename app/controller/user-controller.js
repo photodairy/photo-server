@@ -23,7 +23,7 @@ class UserCls {
       ctx.body = "Exist User";
       console.log("Exist User");
     } else {
-      this.createUser(ctx);
+      await this.createUser(ctx);
     }
   }
 
@@ -40,7 +40,8 @@ class UserCls {
     const { phoneNumber } = ctx.request.body;
     console.log(phoneNumber);
     const user = await UserModel.create({ phoneNumber });
-    ctx.body = "Creat User";
+    ctx.response.body = "Creat User";
+    console.log('Creat User Success.');
   }
 
   // Create User
