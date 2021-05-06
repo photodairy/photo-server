@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const koaJosnError = require('koa-json-error');
 const koaBody = require('koa-body');
 const parameter = require('koa-parameter');
-const routing = require('./routes');
+const routing = require('./app/routes');
 
 const app = new Koa();
 
@@ -18,7 +18,9 @@ app.use(koaJosnError({
   }));
 
 // Get request body
-app.use(koaBody());
+app.use(koaBody({
+  multipart:true
+}));
 app.use(parameter(app));
 routing(app);
 

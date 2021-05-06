@@ -14,6 +14,7 @@ class VerNumberCls {
         const { phoneNumber } = ctx.request.body;
         let item = await VerNumModel.findOne({ phoneNumber });
         if (item) {
+            // TODO: Send phone message.
             await VerNumModel.updateOne({ phoneNumber }, { verNumber })
             ctx.body = "Send Success! Update. PhoneNumber:" + phoneNumber;
         } else {

@@ -20,7 +20,7 @@ class UserCls {
     const haveUser = await UserModel.findOne({ phoneNumber });
     if (haveUser) { 
       console.log(haveUser);
-      ctx.body = "Exist User";
+      ctx.body = haveUser;
       console.log("Exist User");
     } else {
       await this.createUser(ctx);
@@ -40,7 +40,7 @@ class UserCls {
     const { phoneNumber } = ctx.request.body;
     console.log(phoneNumber);
     const user = await UserModel.create({ phoneNumber });
-    ctx.response.body = "Creat User";
+    ctx.response.body = user;
     console.log('Creat User Success.');
   }
 
