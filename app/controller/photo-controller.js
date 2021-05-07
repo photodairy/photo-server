@@ -22,6 +22,7 @@ class PhotoCls {
     const bucketName = 'normal-photo';
     const albumName = 'photos';
     const file = ctx.request.files['photo'];
+    
     if (!file) {
       ctx.body = "Please choose a file to upload first.";
       return;
@@ -30,14 +31,13 @@ class PhotoCls {
     const fileName = file.name;
     const albumPhotosKey = encodeURIComponent(albumName) + "/";
     const photoKey = albumPhotosKey + fileName;
-
-    // const fileStream = file.toBuffer();
     // Use S3 ManagedUpload class as it supports multipart uploads
     let upload = new AWS.S3.ManagedUpload({
       params: {
         Bucket: bucketName,
         Key: photoKey,
-        Body: jsonFile
+        Body: file,
+        ContentType: "image/png"
       }
     });
 
@@ -53,6 +53,40 @@ class PhotoCls {
         return;
       }
     );
+  }
+  async viewAlbum(ctx) {
+    AWS.config.update({ region: 'us-east-1' });
+    const s3 = new AWS.S3({
+      apiVersion: "2006-03-01",
+      params: { Bucket: 'normal-photo' }
+    });
+    const albumName = 'photos';
+    const albumPhotosKey = encodeURIComponent(albumName) + "/";
+    const photoKey = albumPhotosKey + encodeURIComponent('Screenshot2.png');
+    const params = {Bucket: 'normal-photo', Key: photoKey};
+    const promise = s3.getSignedUrlPromise('getObject', params);
+    promise.then(function(url) {
+      console.log('The URL is', url);
+    }, function(err) { 
+      console.log(err);
+     });
+    // s3.listObjects({ Prefix: albumPhotosKey }, function(err, data) {
+    //   if (err) {
+    //     ctx.body = "There was an error viewing your album: " + err.message;
+    //     return;
+    //   }
+    //   // 'this' references the AWS.Response instance that represents the response
+    //   const href = this.request.httpRequest.endpoint.href;
+    //   const bucketUrl = href + 'normal-photo' + "/";
+
+    //   const photo = data.Contents[0];
+    //   const photoKey = photo.Key;
+    //   const photoUrl = bucketUrl + encodeURIComponent(photoKey);
+    //   // const photos = data.Contents.map(function(photo) {
+    //   //   var photoKey = photo.Key;
+    //   //   var photoUrl = bucketUrl + encodeURIComponent(photoKey);
+    //   // }
+    // })
   }
 
   async upload(ctx) {
