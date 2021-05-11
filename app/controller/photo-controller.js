@@ -3,6 +3,33 @@ const photoModel = require('../model/photo-model');
 const fs = require('fs');
 
 class PhotoCls {
+  // Get upload Url
+  async getSignedUploadURL(ctx) {
+    AWS.config.update({ region: 'us-east-1' });
+    const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+    const { fileName, contentType } = ctx.request.query;
+    const bucketName = 'normal-photo';
+    const albumName = 'photos';
+    const albumPhotosKey = encodeURIComponent(albumName) + "/";
+    const photoKey = albumPhotosKey + fileName;
+    // Get signed URL from S3
+    const s3Params = {
+      Bucket: bucketName,
+      Key: photoKey,
+      // Expires: URL_EXPIRATION_SECONDS,
+      ContentType: contentType,
+  
+      // This ACL makes the uploaded object publicly readable. You must also uncomment
+      // the extra permission for the Lambda function in the SAM template.
+  
+      ACL: 'public-read'
+    }
+  
+    console.log('Params: ', s3Params)
+    const uploadURL = await s3.getSignedUrlPromise('putObject', s3Params)
+    
+    ctx.body = uploadURL;
+  }
   // Create Photo
   async createPhoto(ctx) {
     // ctx.verifyParams({
@@ -18,41 +45,61 @@ class PhotoCls {
 
   async addPhoto(ctx) {
     AWS.config.update({ region: 'us-east-1' });
-    // const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+    const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
     const bucketName = 'normal-photo';
     const albumName = 'photos';
-    const file = ctx.request.files['photo'];
+    const file = ctx.request.files.photo;
     
     if (!file) {
       ctx.body = "Please choose a file to upload first.";
       return;
     }
-    const jsonFile = JSON.stringify(file);
+    let render = fs.createReadStream(file.path);
+    // const file = new File();
+    // const fileReader = new FileReader();
+    // fileReader.readAsArrayBuffer(file);
+    // const blobObj = new Blob([file],{type:file.type});
+    // const type = typeof(file);
+    // const jsonFile = JSON.stringify(file);
     const fileName = file.name;
     const albumPhotosKey = encodeURIComponent(albumName) + "/";
     const photoKey = albumPhotosKey + fileName;
     // Use S3 ManagedUpload class as it supports multipart uploads
-    let upload = new AWS.S3.ManagedUpload({
-      params: {
-        Bucket: bucketName,
-        Key: photoKey,
-        Body: file,
-        ContentType: "image/png"
-      }
-    });
+    let uploadParams = {};
+    uploadParams.Bucket = bucketName,
+    uploadParams.Key = photoKey,
+    uploadParams.Body = render,
+    uploadParams.ContentType = "image/png"
 
-    var promise = upload.promise();
+// call S3 to retrieve upload file to specified bucket
+s3.upload (uploadParams, function (err, data) {
+  if (err) {
+    console.log("Error", err);
+  } if (data) {
+    console.log("Upload Success", data.Location);
+  }
+});
+    // let upload = new AWS.S3.ManagedUpload({
+    //   params: {
+    //     Bucket: bucketName,
+    //     Key: photoKey,
+    //     Body: file,
+    //     ContentType: "image/png"
+    //   }
+    // });
 
-    promise.then(
-      function (data) {
-        ctx.body = "Successfully uploaded photo.";
-        return;
-      },
-      function (err) {
-        ctx.body = "There was an error uploading your photo: ", err.message;
-        return;
-      }
-    );
+    // var promise = upload.promise();
+
+    // promise.then(
+    //   function (data) {
+    //     ctx.body = "Successfully uploaded photo.";
+    //     return;
+    //   },
+    //   function (err) {
+    //     ctx.body = "There was an error uploading your photo: ", err.message;
+    //     return;
+    //   }
+    // );
   }
   async viewAlbum(ctx) {
     AWS.config.update({ region: 'us-east-1' });
@@ -62,7 +109,7 @@ class PhotoCls {
     });
     const albumName = 'photos';
     const albumPhotosKey = encodeURIComponent(albumName) + "/";
-    const photoKey = albumPhotosKey + encodeURIComponent('Screenshot2.png');
+    const photoKey = albumPhotosKey + encodeURIComponent('Screenshot4.png');
     const params = {Bucket: 'normal-photo', Key: photoKey};
     const promise = s3.getSignedUrlPromise('getObject', params);
     promise.then(function(url) {
