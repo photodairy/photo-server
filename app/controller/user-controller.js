@@ -1,4 +1,6 @@
+const jsonwebtoken = require('jsonwebtoken');
 const UserModel = require('../model/user-model');
+const { JWT_SECRET } = require('../config')
 
 class UserCls {
   // Get all users
@@ -7,29 +9,24 @@ class UserCls {
   }
 
   // Registered or Login by phone number
-  async registeredOrLogin(ctx) {
-    console.log('registeredOrLogin start');
-    console.log(UserModel);
+  async registeredOrLogin(ctx, next) {
     // ctx.verifyParams({
     //   phoneNumber: { type: 'number', required: true },
     //   verCode: { type: 'number', required: true },
     // });
-
     const { phoneNumber } = ctx.request.body;
-    console.log(phoneNumber);
-    const haveUser = await UserModel.findOne({ phoneNumber });
-    if (haveUser) { 
-      console.log(haveUser);
-      ctx.body = haveUser;
-      console.log("Exist User");
+    // const user = { id: 12, phoneNumber: 151 };
+    const user = await UserModel.findOne({ phoneNumber });
+    if (user) {
+      const jwtStr = jsonwebtoken.sign({ id: user.id, phoneNumber: user.phoneNumber }, JWT_SECRET);
+      ctx.body = { user, jwtStr };
     } else {
-      await this.createUser(ctx);
+      await next();
     }
   }
 
   // Create User
   async createUser(ctx) {
-    console.log('createUser');
     // ctx.verifyParams({
     //   name: { type: 'string', required: true },
     //   password: { type: 'string', required: true },
@@ -38,10 +35,10 @@ class UserCls {
     // const repeatedUser = await User.findOne({ name });
     // if (repeatedUser) { ctx.throw(409, '用户已经占用'); }
     const { phoneNumber } = ctx.request.body;
-    console.log(phoneNumber);
     const user = await UserModel.create({ phoneNumber });
-    ctx.response.body = user;
-    console.log('Creat User Success.');
+
+    const jwtStr = jsonwebtoken.sign({ id: user.id, phoneNumber: user.phoneNumber }, JWT_SECRET);
+    ctx.body = { user, jwtStr };
   }
 
   // Create User
@@ -56,7 +53,7 @@ class UserCls {
     const user = await new UserModel(ctx.request.body).save();
     ctx.body = user;
   }
-  
+
   // Update user
   async updateUser(ctx) {
     // ctx.verifyParams({
@@ -92,7 +89,7 @@ class UserCls {
     if (!user) { ctx.throw(401, '用户名或密码不正确'); }
     // // const { _id, name } = user;
     // // const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' });
-    ctx.body = user.username ;
+    ctx.body = user.username;
   }
 
   // Valdiate phone number

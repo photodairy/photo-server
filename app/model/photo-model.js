@@ -15,7 +15,7 @@ const photsSchema = new mongoose.Schema({
     aperture: { type: String, select: true },
     focal_distance: { type: String, select: true },
     iso: { type: Number, select: true },
-    _user: {
+    user: {
         type: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         select: false,
     },
