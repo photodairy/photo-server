@@ -14,9 +14,9 @@ class UserCls {
     //   phoneNumber: { type: 'number', required: true },
     //   verCode: { type: 'number', required: true },
     // });
-    const { phoneNumber } = ctx.request.body;
-    // const user = { id: 12, phoneNumber: 151 };
-    const user = await UserModel.findOne({ phoneNumber });
+    // const { phoneNumber } = ctx.request.body;
+    const user = { id: '608a8be7e3d9670008cdca18', phoneNumber: 15140503203 };
+    // const user = await UserModel.findOne({ phoneNumber });
     if (user) {
       const jwtStr = jsonwebtoken.sign({ id: user.id, phoneNumber: user.phoneNumber }, JWT_SECRET);
       ctx.body = { user, jwtStr };
@@ -52,6 +52,20 @@ class UserCls {
     if (repeatedUser) { ctx.throw(409, '该手机号以注册'); }
     const user = await new UserModel(ctx.request.body).save();
     ctx.body = user;
+  }
+
+  async auth(ctx, next) {
+    console.log('auth');
+    const { authorization = ''} = ctx.request.header;
+    const token = authorization.replace('Bearer ', '');
+
+    try {
+      const user = jsonwebtoken.verify(token, JWT_SECRET);
+      ctx.state.user = user;
+      await next();
+    } catch (err) {
+      console.log('JWT error');
+    }
   }
 
   // Update user

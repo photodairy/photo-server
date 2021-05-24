@@ -15,18 +15,23 @@ const photsSchema = new mongoose.Schema({
     aperture: { type: String, select: true },
     focal_distance: { type: String, select: true },
     iso: { type: Number, select: true },
-    user: {
+    creator: {
         type: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         select: false,
     },
-    liking_user: {
+    liking_users: {
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
         select: false,
     },
-    collecting_user: {
+    collecting_users: {
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
         select: false,
     },
+    signedUpload_url: { type: String },
+    uploadStatus: { type: String, enum: ['wait', 'success', 'faild'] },
+    signedView_url: { type: String },
+    signedViewRefreshTime: { type: String },
+    upload_url: { type: String },
 }, { timestamps: true })
 
 module.exports = mongoose.model('photos', photsSchema);

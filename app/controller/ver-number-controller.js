@@ -6,7 +6,6 @@ class VerNumberCls {
         ctx.verifyParams({
             phoneNumber: 'number',
         });
-        const _this = this;
         const verNum = Math.round(Math.random() * 100000);
         const verNumber = 888888;
         const { phoneNumber } = ctx.request.body;
@@ -27,8 +26,8 @@ class VerNumberCls {
             phoneNumber: 'number',
             verNumber: 'number'
         });
-        // const result = true;
-        const result = await VerNumModel.findOne(ctx.request.body);
+        const result = true;
+        // const result = await VerNumModel.findOne(ctx.request.body);
         if (result) {
             await next();
         } else {
