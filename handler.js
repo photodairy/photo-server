@@ -12,7 +12,7 @@ const routing = require('./app/routes');
 const app = new Koa();
 
 
-mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/zhihu?retryWrites=true&w=majority', { useNewUrlParser: true , useUnifiedTopology: true}, () => console.log('MongoDB connented!'));
+mongoose.connect('mongodb+srv://fajing:wangfajing@zhihu.57z0a.azure.mongodb.net/DailyPhoto?retryWrites=true&w=majority', { useNewUrlParser: true , useUnifiedTopology: true}, () => console.log('MongoDB connented!'));
 mongoose.connection.on('error', console.error);
 
 app.use(koaJosnError({

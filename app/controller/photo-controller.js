@@ -10,7 +10,7 @@ class PhotoCls {
     AWS.config.update({ region: CONFIG.AWS_CONFIG_REGION });
     const s3 = new AWS.S3({ apiVersion: CONFIG.AWS_S3_CONFIG_AIPVERSION });
     const s3Uid = uuid.v4();
-    const s3Key = ctx.state.user.id + '/' + s3Uid + '.' + ctx.request.body.fileType.split('/')[1];
+    const s3Key = 'testUserid' + '/' + s3Uid + '.' + ctx.request.body.fileType.split('/')[1];
     // Get signed URL from S3
     const s3Params = {
       Bucket: CONFIG.AWS_S3_PHOTO_BUCKETNAME,
@@ -22,17 +22,18 @@ class PhotoCls {
       ACL: 'public-read'
     }
     const uploadURL = await s3.getSignedUrlPromise('putObject', s3Params);
-    ctx.state.s3Infor = { s3Key, uploadURL };
-    await next();
+    // ctx.state.s3Infor = { s3Key, uploadURL };
+    // await next();
+    ctx.body = uploadURL;
   }
 
   // Create Photo
   async createPhoto(ctx) {
-    console.log(ctx.state.user.id);
+    console.log(ctx.state.user._id);
     const photo = await photoModel.create({
       ...ctx.request.body,
       signedUpload_url: ctx.state.s3Infor.uploadURL,
-      creator: ctx.state.user.id,
+      creator: ctx.state.user._id,
       uploadStatus: 'wait',
       s3Bucket: CONFIG.AWS_S3_PHOTO_BUCKETNAME,
       s3Key: ctx.state.s3Infor.s3Key
@@ -43,11 +44,13 @@ class PhotoCls {
 
   // Is the current user is this photo's creator
   async isCurrentUserIsCreator(ctx, next) {
-    const photo = await photoModel.findById(ctx.request.body.id);
+    const photo = await photoModel.findById(ctx.request.body._id).select('+creator');
     if (!photo) {
       ctx.body = 'Photo not existing.';
     } else {
-      if (ctx.state.user.id === ctx.request.body.id) {
+      console.log(ctx.state.user._id);
+      console.log(photo.creator);
+      if (ctx.state.user._id.toString() === photo.creator.toString()) {
         await next();
       } else {
         ctx.body = 'Current user is no permission to edit this photo';
@@ -57,8 +60,8 @@ class PhotoCls {
 
   // Change upload photo status
   async changeUploadPhotsStatus(ctx) {
-    ctx.verifyParams({ uploadStatus: { type: 'String', required: true } })
-    const photo = await photoModel.findByIdAndUpdate(ctx.request.body.id, ctx.request.body);
+    ctx.verifyParams({ uploadStatus: { type: 'string', required: true } })
+    const photo = await photoModel.findByIdAndUpdate(ctx.request.body._id, ctx.request.body);
     if (!photo) {
       ctx.body = 'Photo not existing.';
     } else {

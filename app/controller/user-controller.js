@@ -14,11 +14,12 @@ class UserCls {
     //   phoneNumber: { type: 'number', required: true },
     //   verCode: { type: 'number', required: true },
     // });
-    // const { phoneNumber } = ctx.request.body;
-    const user = { id: '608a8be7e3d9670008cdca18', phoneNumber: 15140503203 };
-    // const user = await UserModel.findOne({ phoneNumber });
+    const { phoneNumber } = ctx.request.body;
+    // const user = { id: '608a8be7e3d9670008cdca18', phoneNumber: 15140503203 };
+    const user = await UserModel.findOne({ phoneNumber });
     if (user) {
-      const jwtStr = jsonwebtoken.sign({ id: user.id, phoneNumber: user.phoneNumber }, JWT_SECRET);
+      const { _id } = user;
+      const jwtStr = jsonwebtoken.sign({ _id, phoneNumber }, JWT_SECRET, { expiresIn: '7d' });
       ctx.body = { user, jwtStr };
     } else {
       await next();
@@ -36,8 +37,8 @@ class UserCls {
     // if (repeatedUser) { ctx.throw(409, '用户已经占用'); }
     const { phoneNumber } = ctx.request.body;
     const user = await UserModel.create({ phoneNumber });
-
-    const jwtStr = jsonwebtoken.sign({ id: user.id, phoneNumber: user.phoneNumber }, JWT_SECRET);
+    const { _id } = user;
+    const jwtStr = jsonwebtoken.sign({ _id, phoneNumber }, JWT_SECRET, { expiresIn: '7d' });
     ctx.body = { user, jwtStr };
   }
 
@@ -56,16 +57,18 @@ class UserCls {
 
   async auth(ctx, next) {
     console.log('auth');
-    const { authorization = ''} = ctx.request.header;
+    const { authorization = '' } = ctx.request.header;
     const token = authorization.replace('Bearer ', '');
+    console.log( token );
 
     try {
       const user = jsonwebtoken.verify(token, JWT_SECRET);
+      console.log( user );
       ctx.state.user = user;
-      await next();
     } catch (err) {
       console.log('JWT error');
     }
+    await next();
   }
 
   // Update user
