@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
           type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
           select: false,
         },
-}, { timestamps: true })
+}, { timestamps: true }, { minimize: false })
 
 
 
@@ -69,4 +69,4 @@ const userSchema = new mongoose.Schema({
 
 
 
-module.exports = mongoose.model('users', userSchema);
+module.exports = mongoose.model('User', userSchema);

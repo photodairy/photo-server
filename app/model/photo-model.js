@@ -15,13 +15,13 @@ const photsSchema = new mongoose.Schema({
     aperture: { type: String, select: true },
     focal_distance: { type: String, select: true },
     iso: { type: Number, select: true },
-    creator: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true, select: false },
+    creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, select: false },
     liking_users: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
         select: false,
     },
     collecting_users: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
         select: false,
     },
     signedUpload_url: { type: String },
@@ -30,6 +30,6 @@ const photsSchema = new mongoose.Schema({
     signedViewRefreshTime: { type: String },
     s3Bucket: { type: String },
     s3Key: { type: String },
-}, { timestamps: true })
+}, { timestamps: true }, { minimize: false })
 
-module.exports = mongoose.model('photos', photsSchema);
+module.exports = mongoose.model('Photo', photsSchema);

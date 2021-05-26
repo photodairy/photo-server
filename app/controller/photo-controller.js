@@ -7,29 +7,32 @@ const CONFIG = require('../config')
 class PhotoCls {
   // Get upload Url
   async getSignedUploadURL(ctx, next) {
+    ctx.verifyParams({
+      fileType: {type: 'string', required: true},
+      fileName: {type: 'string', required: true},
+      title: {type: 'string', required: true},
+    });
     AWS.config.update({ region: CONFIG.AWS_CONFIG_REGION });
     const s3 = new AWS.S3({ apiVersion: CONFIG.AWS_S3_CONFIG_AIPVERSION });
     const s3Uid = uuid.v4();
-    const s3Key = 'testUserid' + '/' + s3Uid + '.' + ctx.request.body.fileType.split('/')[1];
+    const s3Key = ctx.state.user._id + '/' + s3Uid + '.' + ctx.request.body.fileType.split('/')[1];
     // Get signed URL from S3
     const s3Params = {
       Bucket: CONFIG.AWS_S3_PHOTO_BUCKETNAME,
       Key: s3Key,
-      // Expires: URL_EXPIRATION_SECONDS,
+      Expires: CONFIG.AWS_S3_SIGNEDUPLOADURL_EXPIRES,
       ContentType: ctx.request.body.fileType,
       // This ACL makes the uploaded object publicly readable. You must also uncomment
       // the extra permission for the Lambda function in the SAM template.
       ACL: 'public-read'
     }
     const uploadURL = await s3.getSignedUrlPromise('putObject', s3Params);
-    // ctx.state.s3Infor = { s3Key, uploadURL };
-    // await next();
-    ctx.body = uploadURL;
+    ctx.state.s3Infor = { s3Key, uploadURL };
+    await next();
   }
 
   // Create Photo
   async createPhoto(ctx) {
-    console.log(ctx.state.user._id);
     const photo = await photoModel.create({
       ...ctx.request.body,
       signedUpload_url: ctx.state.s3Infor.uploadURL,
@@ -46,24 +49,25 @@ class PhotoCls {
   async isCurrentUserIsCreator(ctx, next) {
     const photo = await photoModel.findById(ctx.request.body._id).select('+creator');
     if (!photo) {
-      ctx.body = 'Photo not existing.';
+      ctx.throw(404, 'Photo not existing.');
     } else {
-      console.log(ctx.state.user._id);
-      console.log(photo.creator);
       if (ctx.state.user._id.toString() === photo.creator.toString()) {
         await next();
       } else {
-        ctx.body = 'Current user is no permission to edit this photo';
+        ctx.throw(403, 'Current user is no permission to edit this photo.');
       }
     }
   }
 
   // Change upload photo status
   async changeUploadPhotsStatus(ctx) {
-    ctx.verifyParams({ uploadStatus: { type: 'string', required: true } })
-    const photo = await photoModel.findByIdAndUpdate(ctx.request.body._id, ctx.request.body);
+    ctx.verifyParams({ 
+      uploadStatus: { type: 'string', required: true },
+      _id: { type: 'string', required: true }
+    })
+    const photo = await photoModel.findByIdAndUpdate(ctx.request.body._id, {...ctx.request.body, signedUpload_url: ''}, { new: true });
     if (!photo) {
-      ctx.body = 'Photo not existing.';
+      ctx.throw(404, 'Photo not existing.');
     } else {
       ctx.body = photo;
     }
@@ -74,8 +78,9 @@ class PhotoCls {
     AWS.config.update({ region: CONFIG.AWS_CONFIG_REGION });
     const s3 = new AWS.S3({ apiVersion: CONFIG.AWS_S3_CONFIG_AIPVERSION });
 
-    const photos = await photoModel.find({ user: ctx.params.userId });
-    if (!photos) {
+    const photos = await photoModel.find({ creator: ctx.params.userId });
+    console.log(photos);
+    if (!!photos) {
       photos.forEach(photo => {
         ctx.state.constructionPhoto = photo;
         next();
@@ -91,6 +96,7 @@ class PhotoCls {
         //   console.log(err);
         // });
       });
+      // TODO: save view url to photo.
       ctx.body = photos;
     } else {
       ctx.body = 'This user not have some photos.';
